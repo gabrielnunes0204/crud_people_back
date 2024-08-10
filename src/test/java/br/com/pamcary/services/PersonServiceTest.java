@@ -95,7 +95,7 @@ public class PersonServiceTest {
     
     @Test
     public void testInsertPersonWithInvalidAttributes() {
-        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Há campos inválidos. Inclusão não efetuada.", false);
+        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Há campos inválidos. Ação não efetuada.", false);
         
         this.requestDto.setCpf(null);
         PersonResponseSimpleDto result = this.service.insertPerson(this.requestDto);
@@ -136,7 +136,7 @@ public class PersonServiceTest {
         
         PersonEntity updatedEntity = new PersonEntity();
         
-        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Pessoa não encontrada. Alteração não efetuada.", false);
+        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Pessoa não encontrada. Ação não efetuada.", false);
 
         when(this.repository.getByCpf(this.requestDto.getCpf())).thenReturn(Optional.of(existingEntity));
         when(this.requestMapper.toPersonEntity(this.requestDto)).thenReturn(updatedEntity);
@@ -165,7 +165,7 @@ public class PersonServiceTest {
     @Test
     public void testDeletePersonWithError() {
         Long id = 1L;
-        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Pessoa não encontrada. Exclusão não efetuada.", false);
+        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Pessoa não encontrada. Ação não efetuada.", false);
 
         when(this.repository.getByCpf(this.requestDto.getCpf())).thenReturn(Optional.of(new PersonEntity(1L, "Name", "12345678910", LocalDate.now())));
         doNothing().when(this.repository).delete(new PersonEntity(1L, "Name", "12345678910", LocalDate.now()));
@@ -180,7 +180,7 @@ public class PersonServiceTest {
     public void testUpdatePersonWithError() {
     	PersonEntity existingEntity = new PersonEntity();
         PersonEntity updatedEntity = new PersonEntity();
-        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Há campos inválidos. Alteração não efetuada.", false);
+        PersonResponseSimpleDto response = new PersonResponseSimpleDto("Há campos inválidos. Ação não efetuada.", false);
 
         when(this.repository.getByCpf(this.requestDto.getCpf())).thenReturn(Optional.of(existingEntity));
         when(this.requestMapper.toPersonEntity(this.requestDto)).thenReturn(updatedEntity);

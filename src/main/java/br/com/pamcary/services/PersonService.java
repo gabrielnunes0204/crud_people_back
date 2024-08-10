@@ -16,6 +16,10 @@ import br.com.pamcary.utils.Utils;
 @Service
 public class PersonService {
 
+	private static final String PESSOA_NAO_ENCONTRADA = "Pessoa não encontrada. Ação não efetuada.";
+	private static final String CPF_JA_EXISTENTE = "CPF já existente. Ação não efetuada.";
+	private static final String CAMPOS_INVALIDOS = "Há campos inválidos. Ação não efetuada.";
+
 	@Autowired
 	private PersonRepository repository;
 	
@@ -45,7 +49,11 @@ public class PersonService {
 	
 	public PersonResponseSimpleDto insertPerson(PersonRequestDto requestDto) {
 		if (!Utils.validateAttributesDto(requestDto)) {
-			return new PersonResponseSimpleDto("Há campos inválidos. Inclusão não efetuada.", false);
+			return new PersonResponseSimpleDto(CAMPOS_INVALIDOS, false);
+		}
+		
+		if (this.validateCpfExists(requestDto.getCpf(), requestDto.getId())) {
+			return new PersonResponseSimpleDto(CPF_JA_EXISTENTE, false);
 		}
 		
 		PersonEntity entity = mapperRequest.toPersonEntity(requestDto);
@@ -56,7 +64,11 @@ public class PersonService {
 	
 	public PersonResponseSimpleDto updatePerson(PersonRequestDto requestDto) {
 		if (!Utils.validateAttributesDto(requestDto)) {
-			return new PersonResponseSimpleDto("Há campos inválidos. Alteração não efetuada.", false);
+			return new PersonResponseSimpleDto(CAMPOS_INVALIDOS, false);
+		}
+		
+		if (this.validateCpfExists(requestDto.getCpf(), requestDto.getId())) {
+			return new PersonResponseSimpleDto(CPF_JA_EXISTENTE, false);
 		}
 		
 		PersonEntity returnGet = this.repository.getById(requestDto.getId()).orElse(new PersonEntity());
@@ -69,7 +81,7 @@ public class PersonService {
 			return new PersonResponseSimpleDto("Alteração efetuada com sucesso.", true);
 		}
 		
-		return new PersonResponseSimpleDto("Pessoa não encontrada. Alteração não efetuada.", false);
+		return new PersonResponseSimpleDto(PESSOA_NAO_ENCONTRADA, false);
 	}
 	
 	public PersonResponseSimpleDto deletePerson(Long id) {
@@ -80,6 +92,18 @@ public class PersonService {
 			return new PersonResponseSimpleDto("Exclusão efetuada com sucesso.", true);
 		}
 		
-		return new PersonResponseSimpleDto("Pessoa não encontrada. Exclusão não efetuada.", false);
+		return new PersonResponseSimpleDto(PESSOA_NAO_ENCONTRADA, false);
+	}
+	
+	private boolean validateCpfExists(String cpf, Long id) {
+		List<PersonResponseDefaultDto> retornoGet = this.getAll();
+		
+		for (PersonResponseDefaultDto item : retornoGet) {
+			if (cpf.equals(item.getCpf()) && id != item.getId()) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 }
